@@ -27,7 +27,7 @@
     <py-script>
         import csv, random
         from pyodide.ffi import create_proxy
-        from js import document
+        from js import document, window
 
         path = "data/french.csv"
 
@@ -44,9 +44,13 @@
             if not units:
                 document.getElementById("units").innerHTML = "No units found."
                 return
+
             html = "<p>Available Units:</p>"
             for u in units:
-                html += f'<button onclick="window.startQuiz(\'{u}\')">{u}</button> '
+                html += (
+                    f'<button onclick="window.startQuiz(\'{u}\')">'
+                    f'{u}</button> '
+                )
 
             document.getElementById("units").innerHTML = html
 
@@ -58,7 +62,11 @@
                 gene = [(row[unitid], row[unitid+1]) for row in reader]
             random.shuffle(gene)
             q, a = gene[0]
-            document.getElementById("quiz").innerHTML = f"<p>{q}</p><input id='answer'><button onclick='window.checkAnswer(\"{a}\")'>Submit</button>"
+            document.getElementById("quiz").innerHTML = (
+                f'<p>{q}</p>'
+                f'<input id="answer">'
+                f'<button onclick="window.checkAnswer(\'{a}\')">Submit</button>'
+            )
 
         def check_answer(correct):
             ans = document.getElementById("answer").value.strip().lower()
@@ -70,9 +78,8 @@
 
         # expose Python functions to JS
         document.getElementById("load").addEventListener("click", create_proxy(load_units))
-        import js
-        js.window.startQuiz = create_proxy(start_quiz)
-        js.window.checkAnswer = create_proxy(check_answer)
+        window.startQuiz = create_proxy(start_quiz)
+        window.checkAnswer = create_proxy(check_answer)
     </py-script>
 
   </body>
