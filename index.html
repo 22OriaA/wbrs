@@ -18,6 +18,10 @@
     <py-script>
         import csv
         import random
+        import os
+
+        print("Root dir:", os.listdir("/"))
+        print("Data dir:", os.listdir("data"))
 
         paths = ["data/PBRS files.csv"]
 
