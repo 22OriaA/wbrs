@@ -8,15 +8,18 @@
   </head>
   <body>
 
+    <!-- From what I found out I have to get the file before running it through py-script which half makes sense? Hopefully this should remove the issue of not finding the csv -->
+    <py-config>
+        [[fetch]]
+        files = ["data/PBRS files.csv"]
+    </py-config>
+
+
     <py-script>
         import csv
         import random
-        import os
 
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        csv_path = os.path.join(script_dir, "PBRS files.csv")
-
-        paths = [csv_path]
+        paths = ["data/PBRS files.csv"]
 
         for obj in paths:
             try:
