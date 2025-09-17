@@ -46,7 +46,8 @@
                 return
             html = "<p>Available Units:</p>"
             for u in units:
-                html += f"<button onclick='window.startQuiz(\"{u}\")'>{u}</button> "
+                html += f'<button onclick="window.startQuiz(\'{u}\')">{u}</button> '
+
             document.getElementById("units").innerHTML = html
 
         def start_quiz(unit):
