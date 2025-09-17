@@ -1,1 +1,108 @@
-<h1>hi</h1>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <title>Web Based Revision System</title>
+      <link rel="stylesheet" href="https://pyscript.net/releases/2025.8.1/core.css">
+      <script type="module" src="https://pyscript.net/releases/2025.8.1/core.js"></script>
+  </head>
+  <body>
+
+    <py-script>
+        import csv
+        import random
+        import os
+
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(script_dir, "PBRS files.csv")
+
+        paths = [csv_path]
+
+        for obj in paths:
+            try:
+                with open (obj, mode="r"):
+                    q=3
+                path=obj
+            except:
+                q=4
+        break1=0
+
+        print("Hello and welcome to the Web Based Revision System")
+
+        while break1==0:
+            break2=0
+            sub=input("Please enter subject\n")
+            while break2==0:
+                break3=0
+                with open (path,mode="r") as file:
+                        csv_reader=csv.reader(file)
+                        
+                        row1=next(csv_reader)
+                        row2=next(csv_reader)
+                        units=[]
+                        unitids=[]
+                        for i in range (len (row1)-1):
+                            if row1[i]==sub:
+                                units.append(row1[i+1])
+                                unitids.append(i)
+                        if len(units)==0:
+                            print("No units available. Try again")
+                            break2=1
+                        else:
+                                done1=0
+                                while done1==0:
+                                    unit=input ("Available units:"+str(units)+". Please select\n")
+                                    if unit in units:
+                                        unitid=unitids[units.index(unit)]
+                                        done1=1
+                                    else:
+                                        print("Invalid unit")
+                                gene=[]
+                                for row in csv_reader:
+                                    gene.append((row[unitid],row[unitid+1]))
+                                    
+                                    
+                                while break3==0:
+                                    done2=0
+                                    while done2==0:
+                                        dirraw=input("Please select A ("+row2[unitid]+" > "+row2[unitid+1]+") or B ("+row2[unitid+1]+" > "+row2[unitid]+") or C (both)\n")
+                                        dirraw=dirraw.lower()
+                                        options=["a","b","c"]
+                                        if dirraw in options:
+                                            dire=options.index(dirraw)
+                                            done2=1
+                                    done3=0
+                                    while done3==0:
+                                        n=input("Please select a number of questions, from 1-"+str(len(gene)-1))
+                                        try:
+                                            n=int(n)
+                                            if n in range (1,len (gene)):
+                                                
+                                                done3=1
+                                            else:
+                                                print ("Number out of range")
+                                        except:
+                                            print("Not a number")
+                                    random.shuffle (gene)
+                                    score=0
+                                    for j in range (n):
+                                        adire=dire
+                                        if dire==2:
+                                            adire=random.randint(0,1)
+
+                                        if adire==1:
+                                            (a,q)=gene[j]
+                                        else:
+                                            (q,a)=gene[j]
+                                        ans=input(q+"\n")
+                                        ans=ans.lower()
+                                        if ans==a:
+                                            print("Correct!")
+                                            score+=1
+                                        else:
+                                            print("Incorrect, correct answer was:"+a)
+                                    print("Your score was "+str(score)+"/"+str(n))
+    </py-script>
+
+  </body>
+</html>
