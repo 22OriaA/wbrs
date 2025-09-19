@@ -61,7 +61,7 @@
                 unitid = row1.index(unit) - 1
                 gene = [(row[unitid], row[unitid+1]) for row in reader]
             random.shuffle(gene)
-            q, a = gene[0]
+            q, a = gene[random.randint(0,len (gene)-1)]
             document.getElementById("quiz").innerHTML = (
                 f'<p>{q}</p>'
                 f'<input id="answer">'
