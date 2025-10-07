@@ -22,74 +22,74 @@
     </py-config>
 
     <h1>Web Based Revision System</h1>
-    <div id="div4"></div>
-
-    <div>
-      <label for="subject">Enter subject:</label>
-      <input id="subject" type="text">
-      <button id="load">Load Units</button>
+    <div id="div4">
+      <div>
+        <label for="subject">Enter subject:</label>
+        <input id="subject" type="text">
+        <button id="load">Load Units</button>
+      </div>
+  
+      <div id="units"></div>
+      <div id="quiz"></div>
+  
+      <py-script>
+          import csv, random
+          from pyodide.ffi import create_proxy
+          from js import document, window
+  
+          path = "data/french.csv"
+  
+          def load_units(event):
+              subject = document.getElementById("subject").value.strip()
+              units, unitids = [], []
+              with open(path, mode="r") as file:
+                  reader = csv.reader(file)
+                  row1, row2 = next(reader), next(reader)
+                  for i in range(len(row1)-1):
+                      if row1[i] == subject:
+                          units.append(row1[i+1])
+                          unitids.append(i)
+              if not units:
+                  document.getElementById("units").innerHTML = "No units found."
+                  return
+  
+              html = "<p>Available Units:</p>"
+              for u in units:
+                  html += (
+                      f'<button onclick="window.startQuiz(\'{u}\')">'
+                      f'{u}</button> '
+                  )
+  
+              document.getElementById("units").innerHTML = html
+  
+          def start_quiz(unit):
+              with open(path, mode="r") as file:
+                  reader = csv.reader(file)
+                  row1, row2 = next(reader), next(reader)
+                  unitid = row1.index(unit) - 1
+                  gene = [(row[unitid], row[unitid+1]) for row in reader]
+              random.shuffle(gene)
+              q, a = gene[random.randint(0,len (gene)-1)]
+              document.getElementById("quiz").innerHTML = (
+                  f'<p>{q}</p>'
+                  f'<input id="answer">'
+                  f'<button onclick="window.checkAnswer(\'{a}\')">Submit</button>'
+              )
+  
+          def check_answer(correct):
+              ans = document.getElementById("answer").value.strip().lower()
+              if ans == correct.lower():
+                  result = "Correct!"
+              else:
+                  result = f"Incorrect, correct answer was: {correct}"
+              document.getElementById("quiz").innerHTML += f"<p>{result}</p>"
+  
+          # expose Python functions to JS
+          document.getElementById("load").addEventListener("click", create_proxy(load_units))
+          window.startQuiz = create_proxy(start_quiz)
+          window.checkAnswer = create_proxy(check_answer)
+      </py-script>
     </div>
-
-    <div id="units"></div>
-    <div id="quiz"></div>
-
-    <py-script>
-        import csv, random
-        from pyodide.ffi import create_proxy
-        from js import document, window
-
-        path = "data/french.csv"
-
-        def load_units(event):
-            subject = document.getElementById("subject").value.strip()
-            units, unitids = [], []
-            with open(path, mode="r") as file:
-                reader = csv.reader(file)
-                row1, row2 = next(reader), next(reader)
-                for i in range(len(row1)-1):
-                    if row1[i] == subject:
-                        units.append(row1[i+1])
-                        unitids.append(i)
-            if not units:
-                document.getElementById("units").innerHTML = "No units found."
-                return
-
-            html = "<p>Available Units:</p>"
-            for u in units:
-                html += (
-                    f'<button onclick="window.startQuiz(\'{u}\')">'
-                    f'{u}</button> '
-                )
-
-            document.getElementById("units").innerHTML = html
-
-        def start_quiz(unit):
-            with open(path, mode="r") as file:
-                reader = csv.reader(file)
-                row1, row2 = next(reader), next(reader)
-                unitid = row1.index(unit) - 1
-                gene = [(row[unitid], row[unitid+1]) for row in reader]
-            random.shuffle(gene)
-            q, a = gene[random.randint(0,len (gene)-1)]
-            document.getElementById("quiz").innerHTML = (
-                f'<p>{q}</p>'
-                f'<input id="answer">'
-                f'<button onclick="window.checkAnswer(\'{a}\')">Submit</button>'
-            )
-
-        def check_answer(correct):
-            ans = document.getElementById("answer").value.strip().lower()
-            if ans == correct.lower():
-                result = "Correct!"
-            else:
-                result = f"Incorrect, correct answer was: {correct}"
-            document.getElementById("quiz").innerHTML += f"<p>{result}</p>"
-
-        # expose Python functions to JS
-        document.getElementById("load").addEventListener("click", create_proxy(load_units))
-        window.startQuiz = create_proxy(start_quiz)
-        window.checkAnswer = create_proxy(check_answer)
-    </py-script>
 
   </body>
 </html>
